@@ -14,20 +14,43 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-#  app:
-#    build: .
-#    container_name: notification-service
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - postgres
-#      - redis
-#      - kafka
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notification_db?TimeZone=UTC
-#      SPRING_DATASOURCE_USERNAME: postgres
-#      SPRING_DATASOURCE_PASSWORD: postgres
+  mirth-db:
+    image: postgres:16
+    container_name: mirth-db
+    environment:
+      POSTGRES_DB: mirth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - mirth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  mirth:
+    image: nextgenhealthcare/connect:latest
+    container_name: mirth-connect
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      # Tell Mirth to use Postgres
+      DATABASE: postgres
+      # Use the service name "db" as the host
+      DATABASE_URL: jdbc:postgresql://mirth-db:5432/mirth_db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+    depends_on:
+      mirth-db:
+        condition: service_healthy
+    volumes:
+      - mirth_data:/opt/connect/appdata
 
 volumes:
   postgres_data:
+  mirth_data:
+  mirth_db_data:
