@@ -20,8 +20,7 @@ public class FhirController {
     private final FhirEncounterRepository encounterRepo;
 
     // GET /fhir/Patient/{id}
-    @GetMapping(value = "/Patient/{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/Patient/{id}")
     public ResponseEntity<String> getPatient(@PathVariable String id) {
         return patientRepo.findByPatientId(id)
                 .map(p -> ResponseEntity.ok(p.getFhirJson()))
@@ -38,8 +37,7 @@ public class FhirController {
     }
 
     // GET /fhir/Encounter?patient={patientId}
-    @GetMapping(value = "/Encounter",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/Encounter")
     public ResponseEntity<List<String>> getEncountersByPatient(
             @RequestParam String patient) {
         List<String> encounters = encounterRepo.findByPatientId(patient)
