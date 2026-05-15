@@ -37,6 +37,7 @@ services:
     ports:
       - "8080:8080"
       - "8443:8443"
+      - "6661:6661"
     environment:
       # Tell Mirth to use Postgres
       DATABASE: postgres
