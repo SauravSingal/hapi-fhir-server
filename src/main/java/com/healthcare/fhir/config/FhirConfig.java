@@ -9,12 +9,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FhirConfig {
 
-    @Bean
-    public FhirContext getFhirContext() {
+
+    public FhirContext fhirContext() {
         return FhirContext.forR4();
     }
 
-    public IParser fhirJsonParser() {
-        return FhirContext.forR4().newJsonParser().setPrettyPrint(true);
+
+    public IParser fhirJsonParser(FhirContext fhirContext) {
+        return fhirContext.newJsonParser().setPrettyPrint(true);
     }
 }
